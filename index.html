@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Outreach Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #111115;
+    --surface2: #18181e;
+    --border: #242430;
+    --accent: #7c6fff;
+    --accent-glow: rgba(124,111,255,0.2);
+    --accent-soft: rgba(124,111,255,0.08);
+    --green: #22c55e;
+    --green-soft: rgba(34,197,94,0.10);
+    --red: #f87171;
+    --red-soft: rgba(248,113,113,0.08);
+    --text: #ededf0;
+    --text-muted: #8080a0;
+    --text-dim: #3a3a50;
+    --radius: 14px;
+    --radius-sm: 9px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 60px 20px 80px;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 16px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--accent); }
+    50% { opacity: 0.5; box-shadow: 0 0 4px var(--accent); }
+  }
+
+  .eyebrow-text {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  h1 {
+    font-family: 'Aerial', sans-serif;
+    font-size: clamp(28px, 6vw, 40px);
+    font-weight: 800;
+    line-height: 1.12;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  /* Input section */
+  .input-section {
+    margin-bottom: 40px;
+  }
+
+  .input-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 6px 6px 6px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .input-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .url-icon {
+    color: var(--text-dim);
+    font-size: 15px;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .url-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    padding: 10px 0;
+  }
+
+  .url-input::placeholder { color: var(--text-dim); }
+
+  .analyze-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: opacity 0.2s, transform 0.15s;
+    flex-shrink: 0;
+  }
+
+  .analyze-btn:hover { opacity: 0.85; }
+  .analyze-btn:active { transform: scale(0.96); }
+  .analyze-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  .btn-spinner {
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Status */
+  .status-bar {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 11px 15px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-glow);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  .status-bar .s-spin {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(124,111,255,0.25);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    flex-shrink: 0;
+  }
+
+  .error-bar {
+    display: none;
+    margin-top: 12px;
+    padding: 11px 15px;
+    background: var(--red-soft);
+    border: 1px solid rgba(248,113,113,0.2);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--red);
+  }
+
+  /* Results */
+  #results { display: none; }
+
+  .results-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  /* DM Cards */
+  .dm-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dm-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .dm-card:hover {
+    border-color: rgba(124,111,255,0.4);
+  }
+
+  .dm-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .dm-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .v-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-glow);
+    border-radius: 6px;
+    padding: 2px 8px;
+    letter-spacing: 0.04em;
+  }
+
+  .angle-tag {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 5px 13px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .copy-btn.copied {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-soft);
+  }
+
+  .copy-icon { font-size: 13px; }
+
+  .dm-message {
+    padding: 18px 18px 14px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .dm-footer {
+    padding: 0 18px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .word-count {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* Recommendation pill */
+  .rec-bar {
+    margin-top: 20px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+  }
+
+  .rec-bar .rec-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+  }
+
+  .rec-bar p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Reset link */
+  .reset-row {
+    text-align: center;
+    margin-top: 28px;
+  }
+
+  .reset-link {
+    font-size: 13px;
+    color: var(--text-dim);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    transition: color 0.15s;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .reset-link:hover { color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">
+      <div class="dot"></div>
+      <span class="eyebrow-text">Outreach Agent</span>
+    </div>
+    <h1>Paste a URL.<br/><em>Get 3 cold DMs.</em></h1>
+    <p class="subtitle">Analyzes any prospect website and writes 3 ready-to-send DM messages instantly.</p>
+  </header>
+
+  <!-- Input -->
+  <div class="input-section">
+    <div class="input-box">
+      <span class="url-icon">🔗</span>
+      <input
+        class="url-input"
+        id="urlInput"
+        type="url"
+        placeholder="https://prospectwebsite.co.uk"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">
+        <div class="btn-spinner" id="btnSpinner"></div>
+        <span id="btnText">Analyze</span>
+      </button>
+    </div>
+    <div class="status-bar" id="statusBar">
+      <div class="s-spin"></div>
+      <span id="statusText">Sending to Make.com...</span>
+    </div>
+    <div class="error-bar" id="errorBar"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <p class="results-label">3 DM Versions</p>
+    <div class="dm-stack" id="dmStack"></div>
+    <div class="rec-bar" id="recBar" style="display:none;">
+      <div class="rec-title">Send This One First</div>
+      <p id="recText"></p>
+    </div>
+    <div class="reset-row">
+      <button class="reset-link" onclick="resetPage()">Analyze another website</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const WEBHOOK_URL = 'YOUR_MAKE_WEBHOOK_URL_HERE';
+
+  function setStatus(msg) {
+    const bar = document.getElementById('statusBar');
+    bar.style.display = 'flex';
+    document.getElementById('statusText').textContent = msg;
+  }
+
+  function hideStatus() {
+    document.getElementById('statusBar').style.display = 'none';
+  }
+
+  function showError(msg) {
+    const box = document.getElementById('errorBar');
+    box.style.display = 'block';
+    box.textContent = '⚠ ' + msg;
+  }
+
+  function hideError() {
+    document.getElementById('errorBar').style.display = 'none';
+  }
+
+  function setLoading(on) {
+    document.getElementById('analyzeBtn').disabled = on;
+    document.getElementById('btnSpinner').style.display = on ? 'block' : 'none';
+    document.getElementById('btnText').textContent = on ? 'Analyzing...' : 'Analyze';
+  }
+
+  function wordCount(str) {
+    return str.trim().split(/\s+/).filter(Boolean).length;
+  }
+
+  async function analyze() {
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url) { showError('Please enter a website URL.'); return; }
+    if (!url.startsWith('http')) { showError('URL must start with https://'); return; }
+
+    hideError();
+    document.getElementById('results').style.display = 'none';
+    setLoading(true);
+    setStatus('Fetching and analyzing website...');
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      if (!res.ok) throw new Error('Make.com returned an error. Check your scenario is active.');
+
+      setStatus('Writing DM messages...');
+      const data = await res.json();
+
+      hideStatus();
+      setLoading(false);
+      renderDMs(data);
+
+    } catch (err) {
+      hideStatus();
+      setLoading(false);
+      showError(err.message);
+    }
+  }
+
+  function renderDMs(data) {
+    const dms = data.dm_versions || [];
+    const defaultAngles = ['SEO Angle', 'CRO Angle', 'PPC Angle'];
+    const stack = document.getElementById('dmStack');
+
+    stack.innerHTML = dms.map((dm, i) => {
+      const msg = dm.message || '';
+      const angle = dm.angle || defaultAngles[i] || ('Version ' + (i+1));
+      const wc = wordCount(msg);
+      const safeMsg = msg.replace(/`/g, '\\`').replace(/\\/g, '\\\\').replace(/\$/g, '\\$');
+
+      return `
+        <div class="dm-card">
+          <div class="dm-head">
+            <div class="dm-meta">
+              <span class="v-badge">V${i+1}</span>
+              <span class="angle-tag">${angle}</span>
+            </div>
+            <button class="copy-btn" id="copybtn-${i}" onclick="copyMsg(${i}, \`${safeMsg}\`)">
+              <span class="copy-icon">📋</span> Copy
+            </button>
+          </div>
+          <div class="dm-message" id="dmtext-${i}">${msg}</div>
+          <div class="dm-footer">
+            <span class="word-count">${wc} words</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Recommendation
+    if (data.recommendation) {
+      document.getElementById('recText').textContent = data.recommendation;
+      document.getElementById('recBar').style.display = 'block';
+    }
+
+    document.getElementById('results').style.display = 'block';
+  }
+
+  function copyMsg(index, text) {
+    const clean = text.replace(/\\`/g, '`').replace(/\\\\/g, '\\').replace(/\\\$/g, '$');
+    navigator.clipboard.writeText(clean).then(() => {
+      const btn = document.getElementById('copybtn-' + index);
+      btn.innerHTML = '<span class="copy-icon">✓</span> Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = '<span class="copy-icon">📋</span> Copy';
+        btn.classList.remove('copied');
+      }, 2200);
+    });
+  }
+
+  function resetPage() {
+    document.getElementById('urlInput').value = '';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('recBar').style.display = 'none';
+    hideError();
+    document.getElementById('urlInput').focus();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('urlInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') analyze();
+    });
+  });
+</script>
+</body>
+</html>
