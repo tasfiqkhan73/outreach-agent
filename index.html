@@ -490,13 +490,16 @@
   }
 
   function renderDMs(data) {
-    const dms = data.dm_versions || [];
-    const defaultAngles = ['SEO Angle', 'CRO Angle', 'PPC Angle'];
+    const dms = [
+      { message: data.dm1, angle: 'SEO Angle' },
+      { message: data.dm2, angle: 'CRO Angle' },
+      { message: data.dm3, angle: 'PPC Angle' }
+    ];
     const stack = document.getElementById('dmStack');
 
     stack.innerHTML = dms.map((dm, i) => {
       const msg = dm.message || '';
-      const angle = dm.angle || defaultAngles[i] || ('Version ' + (i+1));
+      const angle = dm.angle;
       const wc = wordCount(msg);
       const safeMsg = msg.replace(/`/g, '\\`').replace(/\\/g, '\\\\').replace(/\$/g, '\\$');
 
@@ -518,12 +521,6 @@
         </div>
       `;
     }).join('');
-
-    // Recommendation
-    if (data.recommendation) {
-      document.getElementById('recText').textContent = data.recommendation;
-      document.getElementById('recBar').style.display = 'block';
-    }
 
     document.getElementById('results').style.display = 'block';
   }
